@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SportTrack – дневник за тренировки, планове и цели за ученици и любители на спорта.">
+  <meta name="theme-color" content="#0f766e">
+  <title>SportTrack</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Към съдържанието</a>
+
+  <header class="app-header" id="app-header" hidden>
+    <div class="header-inner">
+      <a class="brand" href="#/dashboard" aria-label="SportTrack – табло">
+        <img src="favicon.svg" alt="" width="28" height="28">
+        <span>SportTrack</span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Меню" aria-expanded="false" aria-controls="main-nav">
+        <span class="menu-toggle-bar"></span>
+      </button>
+      <nav class="main-nav" id="main-nav" aria-label="Основна навигация">
+        <a href="#/dashboard" data-route="dashboard">Табло</a>
+        <a href="#/workouts" data-route="workouts">Тренировки</a>
+        <a href="#/plans" data-route="plans">Планове</a>
+        <a href="#/exercises" data-route="exercises">Упражнения</a>
+        <a href="#/goals" data-route="goals">Цели</a>
+        <a href="#/progress" data-route="progress">Прогрес</a>
+        <div class="nav-user">
+          <span class="nav-user-name" id="nav-user-name"></span>
+          <button class="btn btn-ghost btn-small" id="logout-btn" type="button">Изход</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main" id="main" tabindex="-1">
+    <div class="loader" role="status">Зареждане…</div>
+  </main>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <footer class="app-footer">
+    <p>SportTrack е учебен проект за проследяване на тренировки. Не е медицинска система и не дава здравни съвети.</p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
