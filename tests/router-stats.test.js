@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { parseHash, resolveRoute } from '../src/js/router.js';
 import { goalProgress, weeklyWorkoutCounts, workoutsInWeek } from '../src/js/stats.js';
 import { translateError } from '../src/js/errors.js';
+import { isValidConfig, normalizeSupabaseUrl } from '../src/js/config.js';
 
 const ROUTES = ['login', 'register', 'dashboard', 'workouts', 'plans', 'exercises', 'goals', 'progress'];
 
@@ -62,7 +63,33 @@ describe('translateError', () => {
     expect(translateError({ code: '23505', message: 'duplicate key' })).toBe('Вече съществува запис с това име.');
   });
 
-  it('връща общо съобщение за непозната грешка', () => {
+  it('връща общо съобщение за непозната грешка и я записва в конзолата', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(translateError({ message: 'boom' })).toMatch('неочаквана');
+    expect(spy).toHaveBeenCalledOnce();
+    spy.mockRestore();
+  });
+
+  it('подсказва за грешен адрес при отговор 404', () => {
+    expect(translateError({ message: 'Not Found', status: 404 })).toMatch('VITE_SUPABASE_URL');
+  });
+
+  it('разпознава невалиден API ключ', () => {
+    expect(translateError({ message: 'Invalid API key' })).toMatch('.env');
+  });
+});
+
+describe('config', () => {
+  it('премахва /rest/v1/ и наклонени черти от адреса', () => {
+    expect(normalizeSupabaseUrl('https://abc.supabase.co/rest/v1/')).toBe('https://abc.supabase.co');
+    expect(normalizeSupabaseUrl(' https://abc.supabase.co/ ')).toBe('https://abc.supabase.co');
+    expect(normalizeSupabaseUrl('https://abc.supabase.co/auth/v1')).toBe('https://abc.supabase.co');
+  });
+
+  it('приема само попълнена конфигурация', () => {
+    expect(isValidConfig('https://abc.supabase.co', 'sb_publishable_x')).toBe(true);
+    expect(isValidConfig('https://your-project-ref.supabase.co', 'x')).toBe(false);
+    expect(isValidConfig('https://abc.supabase.co', '')).toBe(false);
+    expect(isValidConfig('abc.supabase.co', 'x')).toBe(false);
   });
 });

@@ -6,6 +6,11 @@ const AUTH_MESSAGES = [
   ['unable to validate email', 'Имейлът е невалиден.'],
   ['email address', 'Имейлът е невалиден или не се приема.'],
   ['rate limit', 'Твърде много опити. Изчакайте малко и опитайте отново.'],
+  ['invalid api key', 'Невалиден ключ за Supabase. Проверете файла .env.'],
+  ['no api key', 'Липсва ключ за Supabase. Проверете файла .env.'],
+  ['secret api key', 'В .env е поставен секретният ключ. Използвайте publishable (anon) ключа.'],
+  ['requested path is invalid', 'Грешен адрес на Supabase. Проверете VITE_SUPABASE_URL в .env.'],
+  ['invalid path', 'Грешен адрес на Supabase. Проверете VITE_SUPABASE_URL в .env.'],
   ['failed to fetch', 'Няма връзка със сървъра. Проверете интернет връзката си.'],
   ['network', 'Няма връзка със сървъра. Проверете интернет връзката си.']
 ];
@@ -31,5 +36,12 @@ export function translateError(error) {
   if (match) {
     return match[1];
   }
+  if (error.status === 404) {
+    return 'Сървърът не намира адреса. Проверете VITE_SUPABASE_URL в .env.';
+  }
+  if (error.status >= 500) {
+    return 'Сървърът временно не отговаря. Опитайте отново след малко.';
+  }
+  console.error('SportTrack: непозната грешка', error);
   return 'Възникна неочаквана грешка. Опитайте отново.';
 }

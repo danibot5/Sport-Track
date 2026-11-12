@@ -20,7 +20,7 @@ Final repo must contain: README.md, LICENSE, .gitignore, .env.example, docs/{RES
 ## Status
 
 - Week 1: done (docs moved into docs/, mockups added in week 2).
-- Week 2: done. Prototype, schema, seed, RLS, 30 Vitest tests, GitHub Actions workflow.
+- Week 2: done. Prototype, schema, seed, RLS, 34 Vitest tests, GitHub Actions workflow. Real Supabase project connected (.env URL bug fixed; src/js/config.js normalizes the URL).
 - Next is week 3: forms for creating, editing and deleting workouts (with sets), plans (with plan_items), goals; start a workout from a plan; edit display name.
 - Week 4 algorithm idea is already described in docs/PROJECT_PLAN.md (volume = reps × kg, weekly comparison, "няма база за сравнение" when the previous week is 0). Put it in src/js/stats.js or a new src/js/algorithm.js with tests.
 
@@ -44,6 +44,7 @@ src/css/styles.css    design tokens in :root, dark mode via prefers-color-scheme
 src/js/main.js        route table, auth state listener, menu toggle, logout
 src/js/router.js      hash router (#/name/param), parseHash/resolveRoute are pure and tested
 src/js/supabaseClient.js  reads VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY; isConfigured flag
+src/js/config.js      normalizeSupabaseUrl (strips /rest/v1 and trailing slashes), isValidConfig
 src/js/auth.js        session/profile state, signIn/signUp/signOut
 src/js/api.js         all Supabase queries (fetch*/create*/delete*)
 src/js/validation.js  pure validators returning { valid, errors: {field: message} }

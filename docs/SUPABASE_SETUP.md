@@ -56,7 +56,7 @@
 
 1. В Supabase натиснете **Connect** (горе в средата) или отворете **Project Settings → API Keys**.
 2. Копирайте:
-   - **Project URL**, например `https://abcd1234.supabase.co`;
+   - **Project URL**, например `https://abcd1234.supabase.co`. Копирайте само тази част. Ако някъде видите адрес с `/rest/v1/` накрая, махнете края;
    - **Publishable key** (`sb_publishable_...`). Ако виждате само legacy ключове, вземете **anon public**.
 3. В корена на проекта копирайте `.env.example` като `.env` и попълнете двата реда:
 
@@ -107,6 +107,7 @@ where id = (select id from auth.users where email = 'demo@sporttrack.test');
 | Симптом | Решение |
 | --- | --- |
 | „Липсва връзка със Supabase“ | Няма `.env` или е попълнен грешно. Рестартирайте `npm run dev` след промяна. |
+| „Възникна неочаквана грешка“ или „Грешен адрес на Supabase“ при вход | `VITE_SUPABASE_URL` трябва да е само `https://xxxx.supabase.co`, без `/rest/v1/` накрая. Натиснете F12 → Console за пълния текст на грешката. |
 | „Грешен имейл или парола“ | Проверете акаунта в Authentication → Users и дали е потвърден. |
 | „Имейлът не е потвърден“ | Изключете Confirm email (стъпка 3) или потвърдете потребителя ръчно. |
 | Таблото е празно | Пуснете `seed.sql` след създаването на `demo@sporttrack.test`. |

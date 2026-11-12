@@ -16,7 +16,7 @@
   - упражнения: списък, филтри, добавяне и изтриване (запис в Supabase);
   - тренировки (списък и детайли), планове, цели и прогрес (четене от Supabase);
   - адаптивен дизайн (сгъваемо меню под 860 px, проверено при 375 px), тъмна тема, достъпни етикети и фокус.
-- **Тестове:** 30 автоматизирани теста с Vitest и 10 проверки на RLS и ограниченията. Виж [TESTS.md](TESTS.md).
+- **Тестове:** 34 автоматизирани теста с Vitest и 10 проверки на RLS и ограниченията. Виж [TESTS.md](TESTS.md).
 - **Седмица 1 – допълнения:** документацията е преместена в `docs/` (README сочеше там). Добавени са липсващите макети (`docs/mockups/index.html`), `LICENSE`, `.gitignore`, `.env.example` и папките `database/`, `src/`, `tests/`, `presentation/`.
 - **Нови документи:** [SUPABASE_SETUP.md](SUPABASE_SETUP.md), [AI_USAGE.md](AI_USAGE.md), [TESTS.md](TESTS.md), [SOURCES.md](SOURCES.md), [USER_GUIDE.md](USER_GUIDE.md).
 - **GitHub Actions:** workflow, който пуска тестовете и публикува в GitHub Pages при push в `main`.
