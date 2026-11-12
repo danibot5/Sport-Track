@@ -34,8 +34,7 @@ Final repo must contain: README.md, LICENSE, .gitignore, .env.example, docs/{RES
 
 ## Repository layout
 
-The real repo is `C:\Users\TestGame\Documents\GitHub\Sport-Track\Sport-Track` (remote github.com/danibot5/Sport-Track).
-The parent folder `...\GitHub\Sport-Track` is an older separate clone stuck on the first commit. Ignore it.
+The repo is `C:\Users\TestGame\Documents\GitHub\Sport-Track` (remote github.com/danibot5/Sport-Track). The old nested double folder was flattened by the user on 2026-11-12. GitHub Pages source is set to GitHub Actions, but the secrets are not added yet.
 
 ```
 database/schema.sql   drops and recreates all tables, functions, trigger, RLS (re-runnable; wipes data, backfills profiles from auth.users)
