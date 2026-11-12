@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SportTrack – макети</title>
+  <style>
+    :root {
+      --bg: #eef2f1;
+      --surface: #ffffff;
+      --border: #cfdad8;
+      --text: #15211f;
+      --muted: #5b6b68;
+      --primary: #0f766e;
+      --soft: #d7efec;
+      --danger: #b42318;
+      --note: #fff4d6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.45; }
+    header { padding: 1.5rem 1rem 0.5rem; text-align: center; }
+    header p { color: var(--muted); max-width: 640px; margin: 0.5rem auto 0; }
+    .screens { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; padding: 1.5rem 1rem 3rem; }
+    figure { margin: 0; }
+    figcaption { text-align: center; font-weight: 600; margin-bottom: 0.75rem; }
+    .phone { width: 340px; max-width: 100%; min-height: 680px; background: var(--surface); border: 10px solid #1d2b29; border-radius: 32px; overflow: hidden; }
+    .bar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-weight: 700; }
+    .burger { width: 28px; height: 20px; border-top: 3px solid var(--text); border-bottom: 3px solid var(--text); position: relative; }
+    .burger::after { content: ""; position: absolute; left: 0; right: 0; top: 5px; border-top: 3px solid var(--text); }
+    .content { padding: 1rem; display: grid; gap: 0.75rem; }
+    h2 { margin: 0; font-size: 1.2rem; }
+    .muted { color: var(--muted); font-size: 0.85rem; margin: 0; }
+    .btn { display: block; text-align: center; padding: 0.7rem; border-radius: 8px; background: var(--primary); color: #fff; font-weight: 600; }
+    .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .box { border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem; }
+    .big { font-size: 1.6rem; font-weight: 700; margin: 0; }
+    .progress { height: 10px; border-radius: 99px; background: var(--soft); overflow: hidden; margin: 0.4rem 0; }
+    .progress div { height: 100%; width: 67%; background: var(--primary); }
+    .chart { display: flex; align-items: flex-end; gap: 0.5rem; height: 90px; padding-top: 0.5rem; }
+    .chart div { flex: 1; background: var(--primary); border-radius: 4px 4px 0 0; }
+    .row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    label { font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.2rem; }
+    .input { border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem; font-size: 0.9rem; color: var(--muted); }
+    .input.error { border-color: var(--danger); }
+    .error-text { color: var(--danger); font-size: 0.8rem; margin: 0.2rem 0 0; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .note { background: var(--note); border: 1px dashed #c99a1a; border-radius: 8px; padding: 0.6rem; font-size: 0.8rem; }
+    .volume { background: var(--soft); border-radius: 8px; padding: 0.6rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SportTrack – макети (Седмица 1)</h1>
+    <p>Статични макети на двата основни екрана в мобилен изглед. Жълтите бележки описват поведението и валидацията. Това не е работещото приложение – то е в папка <code>src/</code>.</p>
+  </header>
+
+  <main class="screens">
+    <figure>
+      <figcaption>1. Табло</figcaption>
+      <div class="phone">
+        <div class="bar"><span>SportTrack</span><span class="burger" aria-hidden="true"></span></div>
+        <div class="content">
+          <h2>Здравей, Мария!</h2>
+          <p class="muted">Ето обобщение на тренировките ти.</p>
+          <span class="btn">+ Нова тренировка</span>
+          <div class="stats">
+            <div class="box"><p class="muted">Тренировки тази седмица</p><p class="big">2</p></div>
+            <div class="box"><p class="muted">Седмичен обем</p><p class="big">2 340 kg</p></div>
+          </div>
+          <div class="box">
+            <p class="muted">Активна цел</p>
+            <strong>3 тренировки седмично</strong>
+            <div class="progress"><div></div></div>
+            <p class="muted">2 от 3 (67%)</p>
+          </div>
+          <div class="box">
+            <p class="muted">Обем по седмици</p>
+            <div class="chart" aria-label="Примерна графика">
+              <div style="height: 45%"></div><div style="height: 60%"></div><div style="height: 52%"></div><div style="height: 80%"></div>
+            </div>
+          </div>
+          <div class="note">Един главен бутон „Нова тренировка“, за да е ясен потокът за начинаещи. Графиката ще използва Chart.js.</div>
+        </div>
+      </div>
+    </figure>
+
+    <figure>
+      <figcaption>2. Нова тренировка</figcaption>
+      <div class="phone">
+        <div class="bar"><span>Нова тренировка</span><span class="burger" aria-hidden="true"></span></div>
+        <div class="content">
+          <div><label>Заглавие</label><div class="input">Цяло тяло А</div></div>
+          <div><label>Дата</label><div class="input">12.11.2026</div></div>
+          <div><label>Упражнение</label><div class="input">Клек с щанга ▾</div></div>
+          <div class="grid3">
+            <div><label>Повт.</label><div class="input">8</div></div>
+            <div><label>Тежест kg</label><div class="input error">-5</div></div>
+            <div><label>Мин.</label><div class="input">—</div></div>
+          </div>
+          <p class="error-text">Тежестта трябва да е 0 или повече.</p>
+          <span class="btn ghost">+ Добави серия</span>
+          <div>
+            <div class="row"><span>Серия 1</span><span>8 × 40 kg</span></div>
+            <div class="row"><span>Серия 2</span><span>8 × 40 kg</span></div>
+          </div>
+          <div class="volume">Обем на тренировката: 640 kg</div>
+          <span class="btn">Запази тренировката</span>
+          <div class="note">Валидация: заглавие 2–80 символа; повторения и минути – цели числа ≥ 0; тежест ≥ 0; нужна е поне една серия. Празна тренировка не се записва.</div>
+        </div>
+      </div>
+    </figure>
+  </main>
+</body>
+</html>
