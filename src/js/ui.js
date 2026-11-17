@@ -1,4 +1,4 @@
-import { translate } from './i18n.js';
+import { t } from './i18n.js';
 
 export function escapeHtml(value) {
   return String(value ?? '')
@@ -12,12 +12,15 @@ export function escapeHtml(value) {
 export function setView(html) {
   const main = document.getElementById('main');
   main.innerHTML = html;
-  translate(main);
   return main;
 }
 
+export function langToggle() {
+  return `<button class="btn btn-ghost btn-small lang-toggle" type="button" data-lang-toggle aria-label="${t('lang.switchLabel')}">${t('lang.switch')}</button>`;
+}
+
 export function showLoading() {
-  setView('<div class="loader" role="status" data-i18n="common.loading"></div>');
+  setView(`<div class="loader" role="status">${t('common.loading')}</div>`);
 }
 
 export function showToast(message, type = 'info') {
@@ -53,7 +56,7 @@ export function setFormAlert(form, message, type = 'error') {
   alert.textContent = message ?? '';
 }
 
-export function setBusy(button, busy, busyText = 'Моля, изчакайте…') {
+export function setBusy(button, busy, busyText = t('common.wait')) {
   if (busy) {
     button.dataset.label = button.textContent;
     button.textContent = busyText;

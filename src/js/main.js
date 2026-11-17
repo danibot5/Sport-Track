@@ -97,21 +97,50 @@ function bindChrome() {
     navigate('login');
   });
 
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('[data-lang-toggle]')) {
-      return;
-    }
-    setLang(getLang() === 'bg' ? 'en' : 'bg');
-    translate();
-    updateTitle();
-  });
-
   window.addEventListener('hashchange', router);
+}
+
+function readForms() {
+  return [...document.querySelectorAll('#main form[id]')].map((form) => [
+    form.id,
+    [...form.elements].filter((field) => field.name).map((field) => [field.name, field.type === 'checkbox' ? field.checked : field.value])
+  ]);
+}
+
+function restoreForms(saved) {
+  saved.forEach(([id, fields]) => {
+    const form = document.getElementById(id);
+    fields.forEach(([name, value]) => {
+      const field = form?.elements[name];
+      if (field?.type === 'checkbox') {
+        field.checked = value;
+      } else if (field) {
+        field.value = value;
+      }
+    });
+  });
+}
+
+async function switchLanguage() {
+  const forms = readForms();
+  setLang(getLang() === 'bg' ? 'en' : 'bg');
+  translate();
+  if (isConfigured) {
+    await router();
+  } else {
+    renderSetupNotice();
+  }
+  restoreForms(forms);
 }
 
 async function start() {
   setLang(getLang());
   translate();
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('[data-lang-toggle]')) {
+      switchLanguage();
+    }
+  });
 
   if (!isConfigured) {
     renderSetupNotice();
