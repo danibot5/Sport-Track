@@ -1,6 +1,7 @@
 import { logo } from '../logo.js';
 import { signIn } from '../auth.js';
 import { translateError } from '../errors.js';
+import { t } from '../i18n.js';
 import { navigate } from '../router.js';
 import { setBusy, setFormAlert, setView, showFieldErrors, showToast } from '../ui.js';
 import { validateLogin } from '../validation.js';
@@ -9,24 +10,25 @@ export async function renderLogin() {
   const main = setView(`
     <section class="auth-wrap">
       <div class="card auth-card">
+        <button class="btn btn-ghost btn-small lang-toggle" type="button" data-lang-toggle data-i18n="lang.switch" data-i18n-label="lang.switchLabel"></button>
         <a class="brand" href="#/login">${logo()}<span>SportTrack</span></a>
-        <h1>Вход</h1>
-        <p class="auth-intro">Планирай, записвай и следи тренировките си.</p>
+        <h1 data-i18n="nav.login"></h1>
+        <p class="auth-intro" data-i18n="login.intro"></p>
         <form class="form" id="login-form" novalidate>
           <div class="alert" role="alert"></div>
           <div class="field">
-            <label for="login-email">Имейл</label>
+            <label for="login-email" data-i18n="auth.email"></label>
             <input id="login-email" name="email" type="email" autocomplete="email" required>
             <p class="field-error" data-error-for="email"></p>
           </div>
           <div class="field">
-            <label for="login-password">Парола</label>
+            <label for="login-password" data-i18n="auth.password"></label>
             <input id="login-password" name="password" type="password" autocomplete="current-password" required>
             <p class="field-error" data-error-for="password"></p>
           </div>
-          <button class="btn btn-block" type="submit">Вход</button>
+          <button class="btn btn-block" type="submit" data-i18n="login.submit"></button>
         </form>
-        <p class="auth-switch">Нямате профил? <a href="#/register">Регистрация</a></p>
+        <p class="auth-switch"><span data-i18n="login.noAccount"></span> <a href="#/register" data-i18n="nav.register"></a></p>
       </div>
     </section>
   `);
@@ -45,10 +47,10 @@ export async function renderLogin() {
       return;
     }
     const button = form.querySelector('button[type="submit"]');
-    setBusy(button, true, 'Влизане…');
+    setBusy(button, true, t('login.busy'));
     try {
       await signIn(values.email, values.password);
-      showToast('Добре дошли отново!', 'success');
+      showToast(t('login.welcome'), 'success');
       navigate('dashboard');
     } catch (error) {
       setFormAlert(form, translateError(error));

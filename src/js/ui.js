@@ -1,3 +1,5 @@
+import { translate } from './i18n.js';
+
 export function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -10,11 +12,12 @@ export function escapeHtml(value) {
 export function setView(html) {
   const main = document.getElementById('main');
   main.innerHTML = html;
+  translate(main);
   return main;
 }
 
 export function showLoading() {
-  setView('<div class="loader" role="status">Зареждане…</div>');
+  setView('<div class="loader" role="status" data-i18n="common.loading"></div>');
 }
 
 export function showToast(message, type = 'info') {
