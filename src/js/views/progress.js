@@ -1,15 +1,16 @@
 import { fetchWorkouts } from '../api.js';
 import { formatDate, formatShortDate } from '../format.js';
+import { t } from '../i18n.js';
 import { weeklyWorkoutCounts } from '../stats.js';
 import { setView } from '../ui.js';
 
 export function renderWeekBars(weeks) {
   const max = Math.max(1, ...weeks.map((week) => week.workouts));
   return `
-    <div class="bars" role="list" data-i18n-label="weeks.label">
+    <div class="bars" role="list" aria-label="${t('weeks.label')}">
       ${weeks.map((week) => `
         <div class="bar-row" role="listitem">
-          <span><span data-i18n="weeks.from"></span> ${formatShortDate(week.weekStart)}</span>
+          <span>${t('weeks.from', { date: formatShortDate(week.weekStart) })}</span>
           <div class="bar-track" aria-hidden="true">
             <div class="bar-fill" style="width: ${Math.round((week.workouts / max) * 100)}%"></div>
           </div>
@@ -30,22 +31,22 @@ export async function renderProgress({ isCurrent }) {
     <section>
       <div class="page-head">
         <div>
-          <h1>Прогрес</h1>
-          <p>Брой тренировки и серии за последните 8 седмици.</p>
+          <h1>${t('nav.progress')}</h1>
+          <p>${t('progress.subtitle')}</p>
         </div>
       </div>
 
       <div class="grid grid-two">
         <div class="card">
-          <div class="card-head"><h2>Тренировки по седмици</h2></div>
+          <div class="card-head"><h2>${t('weeks.label')}</h2></div>
           ${renderWeekBars(weeks)}
         </div>
         <div class="card">
-          <div class="card-head"><h2>Таблица</h2></div>
+          <div class="card-head"><h2>${t('progress.table')}</h2></div>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th scope="col">Седмица от</th><th scope="col" class="numeric">Тренировки</th><th scope="col" class="numeric">Серии</th></tr>
+                <tr><th scope="col">${t('progress.weekOf')}</th><th scope="col" class="numeric">${t('nav.workouts')}</th><th scope="col" class="numeric">${t('progress.sets')}</th></tr>
               </thead>
               <tbody>
                 ${rows.map((week) => `
@@ -60,9 +61,7 @@ export async function renderProgress({ isCurrent }) {
         </div>
       </div>
 
-      <div class="alert alert-info" style="margin-top: 1rem">
-        Графиките с Chart.js и изчисляването на тренировъчното натоварване (обем = повторения × тежест) ще бъдат добавени в Седмица 4.
-      </div>
+      <div class="alert alert-info" style="margin-top: 1rem">${t('progress.note')}</div>
     </section>
   `);
 }

@@ -1,14 +1,15 @@
 import { fetchPlans } from '../api.js';
-import { formatNumber, pluralize } from '../format.js';
+import { formatNumber } from '../format.js';
+import { t, tn } from '../i18n.js';
 import { escapeHtml, setView } from '../ui.js';
 
 function describeTarget(item) {
   const parts = [`${item.target_sets} ×`];
   if (item.target_reps !== null) {
-    parts.push(`${item.target_reps} повт.`);
+    parts.push(t('unit.reps', { n: item.target_reps }));
   }
   if (item.target_duration_minutes !== null) {
-    parts.push(`${item.target_duration_minutes} мин`);
+    parts.push(t('unit.minutes', { n: item.target_duration_minutes }));
   }
   if (item.target_weight_kg !== null) {
     parts.push(`@ ${formatNumber(item.target_weight_kg)} kg`);
@@ -23,14 +24,14 @@ export async function renderPlans({ isCurrent }) {
   }
 
   const content = plans.length === 0
-    ? '<p class="empty">Все още нямате тренировъчни планове.</p>'
+    ? `<p class="empty">${t('plans.empty')}</p>`
     : `
       <div class="grid grid-two">
         ${plans.map((plan) => `
           <article class="card">
             <div class="card-head">
               <h2>${escapeHtml(plan.name)}</h2>
-              <span class="badge badge-primary">${pluralize(plan.plan_items.length, 'упражнение', 'упражнения')}</span>
+              <span class="badge badge-primary">${tn('plural.exercises', plan.plan_items.length)}</span>
             </div>
             ${plan.description ? `<p>${escapeHtml(plan.description)}</p>` : ''}
             <ol class="plan-items">
@@ -44,8 +45,8 @@ export async function renderPlans({ isCurrent }) {
     <section>
       <div class="page-head">
         <div>
-          <h1>Планове</h1>
-          <p>Тренировъчни планове с целеви серии и повторения.</p>
+          <h1>${t('nav.plans')}</h1>
+          <p>${t('plans.subtitle')}</p>
         </div>
       </div>
       ${content}

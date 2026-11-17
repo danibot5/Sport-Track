@@ -1,18 +1,6 @@
-const dateFormatter = new Intl.DateTimeFormat('bg-BG', { day: 'numeric', month: 'short', year: 'numeric' });
-const numberFormatter = new Intl.NumberFormat('bg-BG', { maximumFractionDigits: 2 });
+import { getLocale } from './i18n.js';
 
-export const CATEGORY_LABELS = {
-  strength: 'Сила',
-  cardio: 'Кардио',
-  flexibility: 'Гъвкавост',
-  other: 'Друго'
-};
-
-export const GOAL_TYPE_LABELS = {
-  workouts_per_week: 'Тренировки седмично',
-  weekly_volume: 'Седмичен обем',
-  custom: 'Лична цел'
-};
+export const CATEGORIES = ['strength', 'cardio', 'flexibility', 'other'];
 
 export function parseIsoDate(value) {
   const [year, month, day] = String(value).split('-').map(Number);
@@ -30,7 +18,7 @@ export function formatDate(value) {
   if (!value) {
     return '—';
   }
-  return dateFormatter.format(parseIsoDate(value));
+  return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short', year: 'numeric' }).format(parseIsoDate(value));
 }
 
 export function formatShortDate(value) {
@@ -39,7 +27,7 @@ export function formatShortDate(value) {
 }
 
 export function formatNumber(value) {
-  return numberFormatter.format(Number(value) || 0);
+  return new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 2 }).format(Number(value) || 0);
 }
 
 export function startOfWeek(date) {
@@ -53,8 +41,4 @@ export function addDays(date, days) {
   const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   result.setDate(result.getDate() + days);
   return result;
-}
-
-export function pluralize(count, one, many) {
-  return `${count} ${count === 1 ? one : many}`;
 }

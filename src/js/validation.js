@@ -1,5 +1,7 @@
+import { t } from './i18n.js';
+import { CATEGORIES } from './format.js';
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const CATEGORIES = ['strength', 'cardio', 'flexibility', 'other'];
 
 function result(errors) {
   return { valid: Object.keys(errors).length === 0, errors };
@@ -16,26 +18,26 @@ function isBlank(value) {
 function checkNumber(value, { min, max, integer = false }) {
   const number = Number(value);
   if (isBlank(value) || !Number.isFinite(number)) {
-    return 'Въведете число.';
+    return t('val.number');
   }
   if (integer && !Number.isInteger(number)) {
-    return 'Въведете цяло число.';
+    return t('val.integer');
   }
   if (number < min) {
-    return `Стойността трябва да е поне ${min}.`;
+    return t('val.min', { n: min });
   }
   if (number > max) {
-    return `Стойността трябва да е най-много ${max}.`;
+    return t('val.max', { n: max });
   }
   return null;
 }
 
 export function validateEmail(email) {
   if (isBlank(email)) {
-    return 'Въведете имейл.';
+    return t('val.emailRequired');
   }
   if (!EMAIL_PATTERN.test(String(email).trim())) {
-    return 'Имейлът не е във валиден формат.';
+    return t('val.emailInvalid');
   }
   return null;
 }
@@ -43,13 +45,13 @@ export function validateEmail(email) {
 export function validatePassword(password) {
   const value = String(password ?? '');
   if (value.length === 0) {
-    return 'Въведете парола.';
+    return t('val.passwordRequired');
   }
   if (value.length < 8) {
-    return 'Паролата трябва да е поне 8 символа.';
+    return t('val.passwordShort');
   }
   if (!/[A-Za-zА-Яа-я]/.test(value) || !/\d/.test(value)) {
-    return 'Паролата трябва да съдържа поне една буква и една цифра.';
+    return t('val.passwordWeak');
   }
   return null;
 }
@@ -61,7 +63,7 @@ export function validateLogin({ email, password }) {
     errors.email = emailError;
   }
   if (isBlank(password)) {
-    errors.password = 'Въведете парола.';
+    errors.password = t('val.passwordRequired');
   }
   return result(errors);
 }
@@ -70,7 +72,7 @@ export function validateRegistration({ displayName, email, password, confirmPass
   const errors = {};
   const nameLength = textLength(displayName);
   if (nameLength < 2 || nameLength > 50) {
-    errors.displayName = 'Името трябва да е между 2 и 50 символа.';
+    errors.displayName = t('val.displayName');
   }
   const emailError = validateEmail(email);
   if (emailError) {
@@ -81,7 +83,7 @@ export function validateRegistration({ displayName, email, password, confirmPass
     errors.password = passwordError;
   }
   if (!passwordError && password !== confirmPassword) {
-    errors.confirmPassword = 'Паролите не съвпадат.';
+    errors.confirmPassword = t('val.passwordMismatch');
   }
   return result(errors);
 }
@@ -90,10 +92,10 @@ export function validateExercise({ name, category }) {
   const errors = {};
   const nameLength = textLength(name);
   if (nameLength < 2 || nameLength > 60) {
-    errors.name = 'Името трябва да е между 2 и 60 символа.';
+    errors.name = t('val.exerciseName');
   }
   if (!CATEGORIES.includes(category)) {
-    errors.category = 'Изберете категория.';
+    errors.category = t('val.category');
   }
   return result(errors);
 }
@@ -103,7 +105,7 @@ export function validateWorkoutSet({ repetitions, weightKg, durationMinutes }) {
   const hasReps = !isBlank(repetitions);
   const hasDuration = !isBlank(durationMinutes);
   if (!hasReps && !hasDuration) {
-    errors.repetitions = 'Въведете повторения или продължителност.';
+    errors.repetitions = t('val.repsOrDuration');
   }
   if (hasReps) {
     const error = checkNumber(repetitions, { min: 0, max: 1000, integer: true });
@@ -130,10 +132,10 @@ export function validateGoal({ title, targetValue, unit, dueDate }, today = new 
   const errors = {};
   const titleLength = textLength(title);
   if (titleLength < 2 || titleLength > 80) {
-    errors.title = 'Заглавието трябва да е между 2 и 80 символа.';
+    errors.title = t('val.goalTitle');
   }
   if (isBlank(targetValue)) {
-    errors.targetValue = 'Въведете целева стойност.';
+    errors.targetValue = t('val.targetRequired');
   } else {
     const targetError = checkNumber(targetValue, { min: 0.01, max: 100000 });
     if (targetError) {
@@ -142,14 +144,14 @@ export function validateGoal({ title, targetValue, unit, dueDate }, today = new 
   }
   const unitLength = textLength(unit);
   if (unitLength < 1 || unitLength > 20) {
-    errors.unit = 'Въведете мерна единица (до 20 символа).';
+    errors.unit = t('val.unit');
   }
   if (!isBlank(dueDate)) {
     const due = new Date(`${dueDate}T23:59:59`);
     if (Number.isNaN(due.getTime())) {
-      errors.dueDate = 'Невалидна дата.';
+      errors.dueDate = t('val.dateInvalid');
     } else if (due < today) {
-      errors.dueDate = 'Крайният срок не може да е в миналото.';
+      errors.dueDate = t('val.datePast');
     }
   }
   return result(errors);
