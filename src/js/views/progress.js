@@ -6,10 +6,10 @@ import { setView } from '../ui.js';
 export function renderWeekBars(weeks) {
   const max = Math.max(1, ...weeks.map((week) => week.workouts));
   return `
-    <div class="bars" role="list" aria-label="Тренировки по седмици">
+    <div class="bars" role="list" data-i18n-label="weeks.label">
       ${weeks.map((week) => `
         <div class="bar-row" role="listitem">
-          <span>от ${formatShortDate(week.weekStart)}</span>
+          <span><span data-i18n="weeks.from"></span> ${formatShortDate(week.weekStart)}</span>
           <div class="bar-track" aria-hidden="true">
             <div class="bar-fill" style="width: ${Math.round((week.workouts / max) * 100)}%"></div>
           </div>

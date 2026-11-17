@@ -504,8 +504,15 @@ img {
 }
 
 .auth-card {
+  position: relative;
   width: 100%;
   max-width: 420px;
+}
+
+.auth-card .lang-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .auth-card .brand {

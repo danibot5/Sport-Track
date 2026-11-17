@@ -3,6 +3,7 @@ import { getDisplayName, getUser, loadProfile, loadSession, setSessionUser, sign
 import { navigate, resolveRoute } from './router.js';
 import { renderError, setView, showLoading, showToast } from './ui.js';
 import { translateError } from './errors.js';
+import { getLang, setLang, t, translate } from './i18n.js';
 import { renderLogin } from './views/login.js';
 import { renderRegister } from './views/register.js';
 import { renderDashboard } from './views/dashboard.js';
@@ -14,14 +15,14 @@ import { renderProgress } from './views/progress.js';
 import { renderSetupNotice } from './views/setup.js';
 
 const ROUTES = {
-  login: { render: renderLogin, title: 'Вход' },
-  register: { render: renderRegister, title: 'Регистрация' },
-  dashboard: { render: renderDashboard, title: 'Табло' },
-  workouts: { render: renderWorkouts, title: 'Тренировки' },
-  plans: { render: renderPlans, title: 'Планове' },
-  exercises: { render: renderExercises, title: 'Упражнения' },
-  goals: { render: renderGoals, title: 'Цели' },
-  progress: { render: renderProgress, title: 'Прогрес' }
+  login: renderLogin,
+  register: renderRegister,
+  dashboard: renderDashboard,
+  workouts: renderWorkouts,
+  plans: renderPlans,
+  exercises: renderExercises,
+  goals: renderGoals,
+  progress: renderProgress
 };
 
 const header = document.getElementById('app-header');
@@ -31,6 +32,11 @@ const userName = document.getElementById('nav-user-name');
 const logoutButton = document.getElementById('logout-btn');
 
 let renderToken = 0;
+let currentRoute = 'login';
+
+function updateTitle() {
+  document.title = `${t(`nav.${currentRoute}`)} · SportTrack`;
+}
 
 function updateChrome(routeName) {
   const loggedIn = Boolean(getUser());
@@ -58,8 +64,9 @@ async function router() {
     return;
   }
   const token = ++renderToken;
-  const { render, title } = ROUTES[route.name];
-  document.title = `${title} · SportTrack`;
+  const render = ROUTES[route.name];
+  currentRoute = route.name;
+  updateTitle();
   updateChrome(route.name);
   showLoading();
   try {
@@ -83,17 +90,29 @@ function bindChrome() {
   logoutButton.addEventListener('click', async () => {
     try {
       await signOut();
-      showToast('Излязохте от профила си.');
+      showToast(t('nav.loggedOut'));
     } catch (error) {
       showToast(translateError(error), 'error');
     }
     navigate('login');
   });
 
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-lang-toggle]')) {
+      return;
+    }
+    setLang(getLang() === 'bg' ? 'en' : 'bg');
+    translate();
+    updateTitle();
+  });
+
   window.addEventListener('hashchange', router);
 }
 
 async function start() {
+  setLang(getLang());
+  translate();
+
   if (!isConfigured) {
     renderSetupNotice();
     return;
