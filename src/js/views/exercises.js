@@ -1,4 +1,4 @@
-import { createExercise, deleteExercise, fetchExercises } from '../api.js';
+import { createExercise, deleteExercise, fetchExercises, updateExercise } from '../api.js';
 import { getUser } from '../auth.js';
 import { translateError } from '../errors.js';
 import { CATEGORIES } from '../format.js';
@@ -9,6 +9,10 @@ import { validateExercise } from '../validation.js';
 const FILTERS = ['all', 'mine', ...CATEGORIES];
 
 let filter = 'all';
+
+function sortByName(list) {
+  return [...list].sort((a, b) => a.name.localeCompare(b.name, getLocale()));
+}
 
 function filterLabel(id) {
   if (id === 'all') {
@@ -46,7 +50,10 @@ function renderList(exercises) {
             </p>
           </div>
           ${exercise.user_id === userId
-            ? `<button class="btn btn-danger btn-small" type="button" data-delete="${exercise.id}" data-name="${escapeHtml(exercise.name)}">${t('common.delete')}</button>`
+            ? `<div class="item-actions">
+                <button class="btn btn-ghost btn-small" type="button" data-edit="${exercise.id}">${t('common.edit')}</button>
+                <button class="btn btn-danger btn-small" type="button" data-delete="${exercise.id}" data-name="${escapeHtml(exercise.name)}">${t('common.delete')}</button>
+              </div>`
             : `<span class="badge">${t('ex.shared')}</span>`}
         </li>`).join('')}
     </ul>`;
@@ -69,7 +76,7 @@ export async function renderExercises({ isCurrent }) {
 
       <div class="grid grid-two">
         <div class="card">
-          <div class="card-head"><h2>${t('ex.new')}</h2></div>
+          <div class="card-head"><h2 id="exercise-form-title">${t('ex.new')}</h2></div>
           <form class="form" id="exercise-form" novalidate>
             <div class="alert" role="alert"></div>
             <div class="field">
@@ -88,7 +95,10 @@ export async function renderExercises({ isCurrent }) {
               <input name="usesWeight" type="checkbox" checked>
               ${t('ex.usesWeight')}
             </label>
-            <button class="btn" type="submit">${t('ex.add')}</button>
+            <div class="form-actions">
+              <button class="btn" type="submit">${t('ex.add')}</button>
+              <button class="btn btn-ghost" type="button" data-cancel-edit hidden>${t('common.cancel')}</button>
+            </div>
           </form>
         </div>
 
@@ -109,6 +119,29 @@ export async function renderExercises({ isCurrent }) {
   const listContainer = main.querySelector('#exercise-list');
   const countBadge = main.querySelector('#exercise-count');
   const form = main.querySelector('#exercise-form');
+  const formTitle = main.querySelector('#exercise-form-title');
+  const submitButton = form.querySelector('button[type="submit"]');
+  const cancelButton = form.querySelector('[data-cancel-edit]');
+  let editingId = null;
+
+  function setEditing(exercise) {
+    editingId = exercise?.id ?? null;
+    formTitle.textContent = editingId ? t('ex.edit') : t('ex.new');
+    submitButton.textContent = editingId ? t('common.saveChanges') : t('ex.add');
+    cancelButton.hidden = !editingId;
+    showFieldErrors(form, {});
+    setFormAlert(form, '');
+    if (exercise) {
+      form.elements.name.value = exercise.name;
+      form.elements.category.value = exercise.category;
+      form.elements.usesWeight.checked = exercise.uses_weight;
+      form.elements.name.focus();
+    } else {
+      form.reset();
+    }
+  }
+
+  cancelButton.addEventListener('click', () => setEditing(null));
 
   function refreshList() {
     const visible = applyFilter(exercises);
@@ -127,6 +160,11 @@ export async function renderExercises({ isCurrent }) {
   });
 
   listContainer.addEventListener('click', async (event) => {
+    const editButton = event.target.closest('[data-edit]');
+    if (editButton) {
+      setEditing(exercises.find((exercise) => exercise.id === editButton.dataset.edit));
+      return;
+    }
     const button = event.target.closest('[data-delete]');
     if (!button) {
       return;
@@ -138,6 +176,9 @@ export async function renderExercises({ isCurrent }) {
     try {
       await deleteExercise(button.dataset.delete);
       exercises = exercises.filter((exercise) => exercise.id !== button.dataset.delete);
+      if (editingId === button.dataset.delete) {
+        setEditing(null);
+      }
       refreshList();
       showToast(t('ex.deleted'), 'success');
     } catch (error) {
@@ -159,18 +200,23 @@ export async function renderExercises({ isCurrent }) {
     if (!valid) {
       return;
     }
-    const button = form.querySelector('button[type="submit"]');
-    setBusy(button, true, t('common.saving'));
+    const wasEditing = Boolean(editingId);
+    setBusy(submitButton, true, t('common.saving'));
     try {
-      const created = await createExercise(values);
-      exercises = [...exercises, created].sort((a, b) => a.name.localeCompare(b.name, getLocale()));
-      form.reset();
+      if (wasEditing) {
+        const updated = await updateExercise(editingId, values);
+        exercises = sortByName(exercises.map((exercise) => (exercise.id === updated.id ? updated : exercise)));
+      } else {
+        const created = await createExercise(values);
+        exercises = sortByName([...exercises, created]);
+      }
+      setBusy(submitButton, false);
+      setEditing(null);
       refreshList();
-      showToast(t('ex.added'), 'success');
+      showToast(wasEditing ? t('ex.updated') : t('ex.added'), 'success');
     } catch (error) {
+      setBusy(submitButton, false);
       setFormAlert(form, translateError(error));
-    } finally {
-      setBusy(button, false);
     }
   });
 

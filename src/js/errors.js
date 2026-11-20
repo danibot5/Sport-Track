@@ -13,7 +13,10 @@ const AUTH_MESSAGES = [
   ['secret api key', 'err.secretKey'],
   ['requested path is invalid', 'err.badUrl'],
   ['invalid path', 'err.badUrl'],
+  ['jwt expired', 'err.session'],
   ['failed to fetch', 'err.network'],
+  ['load failed', 'err.network'],
+  ['networkerror', 'err.network'],
   ['network', 'err.network']
 ];
 
@@ -23,12 +26,16 @@ const DB_MESSAGES = {
   '23514': 'err.outOfRange',
   '23502': 'err.required',
   '42501': 'err.forbidden',
+  'PGRST116': 'err.noRows',
   'PGRST301': 'err.session'
 };
 
 export function translateError(error) {
   if (!error) {
     return '';
+  }
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    return t('err.offline');
   }
   if (error.code && DB_MESSAGES[error.code]) {
     return t(DB_MESSAGES[error.code]);

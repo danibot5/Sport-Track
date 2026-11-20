@@ -1,7 +1,7 @@
 import { isConfigured, supabase } from './supabaseClient.js';
 import { getDisplayName, getUser, loadProfile, loadSession, setSessionUser, signOut } from './auth.js';
 import { navigate, resolveRoute } from './router.js';
-import { renderError, setView, showLoading, showToast } from './ui.js';
+import { renderErrorPage, setView, showLoading, showToast } from './ui.js';
 import { translateError } from './errors.js';
 import { getLang, setLang, t, translate } from './i18n.js';
 import { renderLogin } from './views/login.js';
@@ -73,7 +73,8 @@ async function router() {
     await render({ params: route.params, isCurrent: () => token === renderToken });
   } catch (error) {
     if (token === renderToken) {
-      setView(renderError(translateError(error)));
+      const main = setView(renderErrorPage(translateError(error)));
+      main.querySelector('[data-retry]')?.addEventListener('click', router);
     }
   }
   if (token === renderToken) {
@@ -98,6 +99,18 @@ function bindChrome() {
   });
 
   window.addEventListener('hashchange', router);
+}
+
+function bindErrorHandlers() {
+  window.addEventListener('offline', () => showToast(t('err.offline'), 'error'));
+  window.addEventListener('online', () => showToast(t('common.online'), 'success'));
+  // Неуловена грешка не трябва да оставя бял екран – показваме съобщение.
+  window.addEventListener('unhandledrejection', (event) => {
+    showToast(translateError(event.reason), 'error');
+  });
+  window.addEventListener('error', (event) => {
+    showToast(translateError(event.error ?? event.message), 'error');
+  });
 }
 
 function readForms() {
@@ -136,6 +149,7 @@ async function switchLanguage() {
 async function start() {
   setLang(getLang());
   translate();
+  bindErrorHandlers();
   document.addEventListener('click', (event) => {
     if (event.target.closest('[data-lang-toggle]')) {
       switchLanguage();

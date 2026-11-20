@@ -156,3 +156,97 @@ export function validateGoal({ title, targetValue, unit, dueDate }, today = new 
   }
   return result(errors);
 }
+
+export const MAX_WORKOUT_SETS = 50;
+export const MAX_PLAN_ITEMS = 30;
+
+function isValidIsoDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))) {
+    return false;
+  }
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
+export function validateWorkout({ title, workoutDate, notes, sets = [] }) {
+  const errors = {};
+  const titleLength = textLength(title);
+  if (titleLength < 2 || titleLength > 80) {
+    errors.title = t('val.workoutTitle');
+  }
+  if (isBlank(workoutDate)) {
+    errors.workoutDate = t('val.dateRequired');
+  } else if (!isValidIsoDate(workoutDate)) {
+    errors.workoutDate = t('val.dateInvalid');
+  }
+  if (String(notes ?? '').length > 1000) {
+    errors.notes = t('val.notesLong');
+  }
+  if (sets.length === 0) {
+    errors.sets = t('val.setsRequired');
+  } else if (sets.length > MAX_WORKOUT_SETS) {
+    errors.sets = t('val.setsTooMany', { n: MAX_WORKOUT_SETS });
+  }
+  const setErrors = sets.map((set) => {
+    const { errors: rowErrors } = validateWorkoutSet(set);
+    if (isBlank(set.exerciseId)) {
+      rowErrors.exerciseId = t('val.exerciseRequired');
+    }
+    return rowErrors;
+  });
+  const valid = Object.keys(errors).length === 0 && setErrors.every((row) => Object.keys(row).length === 0);
+  return { valid, errors, setErrors };
+}
+
+export function validatePlanItem({ exerciseId, targetSets, targetReps, targetWeightKg, targetDurationMinutes }) {
+  const errors = {};
+  if (isBlank(exerciseId)) {
+    errors.exerciseId = t('val.exerciseRequired');
+  }
+  const setsError = checkNumber(targetSets, { min: 1, max: 20, integer: true });
+  if (setsError) {
+    errors.targetSets = setsError;
+  }
+  const hasReps = !isBlank(targetReps);
+  const hasDuration = !isBlank(targetDurationMinutes);
+  if (!hasReps && !hasDuration) {
+    errors.targetReps = t('val.repsOrDuration');
+  }
+  if (hasReps) {
+    const error = checkNumber(targetReps, { min: 1, max: 200, integer: true });
+    if (error) {
+      errors.targetReps = error;
+    }
+  }
+  if (!isBlank(targetWeightKg)) {
+    const error = checkNumber(targetWeightKg, { min: 0, max: 1000 });
+    if (error) {
+      errors.targetWeightKg = error;
+    }
+  }
+  if (hasDuration) {
+    const error = checkNumber(targetDurationMinutes, { min: 1, max: 600, integer: true });
+    if (error) {
+      errors.targetDurationMinutes = error;
+    }
+  }
+  return result(errors);
+}
+
+export function validatePlan({ name, description, items = [] }) {
+  const errors = {};
+  const nameLength = textLength(name);
+  if (nameLength < 2 || nameLength > 60) {
+    errors.name = t('val.planName');
+  }
+  if (String(description ?? '').length > 500) {
+    errors.description = t('val.descriptionLong');
+  }
+  if (items.length > MAX_PLAN_ITEMS) {
+    errors.items = t('val.itemsTooMany', { n: MAX_PLAN_ITEMS });
+  }
+  const itemErrors = items.map((item) => validatePlanItem(item).errors);
+  const valid = Object.keys(errors).length === 0 && itemErrors.every((row) => Object.keys(row).length === 0);
+  return { valid, errors, itemErrors };
+}
