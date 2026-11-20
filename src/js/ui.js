@@ -70,3 +70,21 @@ export function setBusy(button, busy, busyText = t('common.wait')) {
 export function renderError(message) {
   return `<div class="alert alert-error" role="alert">${escapeHtml(message)}</div>`;
 }
+
+export function renderEmpty(message, actionHtml = '') {
+  return `<div class="empty-state"><p class="empty">${escapeHtml(message)}</p>${actionHtml}</div>`;
+}
+
+export function renderErrorPage(message) {
+  return `
+    <section class="error-page">
+      <div class="card">
+        <h1>${t('err.pageTitle')}</h1>
+        ${renderError(message)}
+        <div class="form-actions">
+          <button class="btn" type="button" data-retry>${t('common.retry')}</button>
+          <a class="btn btn-ghost" href="#/dashboard">${t('nav.dashboard')}</a>
+        </div>
+      </div>
+    </section>`;
+}

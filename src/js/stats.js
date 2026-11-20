@@ -3,7 +3,7 @@ import { addDays, parseIsoDate, startOfWeek, toIsoDate } from './format.js';
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function setCount(workout) {
-  return workout.workout_items?.[0]?.count ?? 0;
+  return workout.workout_items?.length ?? 0;
 }
 
 export function workoutsInWeek(workouts, today = new Date()) {

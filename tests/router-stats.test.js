@@ -28,10 +28,10 @@ describe('router', () => {
 describe('stats', () => {
   const today = new Date(2026, 10, 12);
   const workouts = [
-    { workout_date: '2026-11-12', workout_items: [{ count: 4 }] },
-    { workout_date: '2026-11-09', workout_items: [{ count: 2 }] },
-    { workout_date: '2026-11-08', workout_items: [{ count: 3 }] },
-    { workout_date: '2026-10-01', workout_items: [{ count: 1 }] }
+    { workout_date: '2026-11-12', workout_items: Array(4).fill({}) },
+    { workout_date: '2026-11-09', workout_items: Array(2).fill({}) },
+    { workout_date: '2026-11-08', workout_items: Array(3).fill({}) },
+    { workout_date: '2026-10-01', workout_items: Array(1).fill({}) }
   ];
 
   it('брои тренировките от понеделник до неделя', () => {

@@ -4,8 +4,11 @@ import {
   validateExercise,
   validateGoal,
   validateLogin,
+  validatePlan,
+  validatePlanItem,
   validatePassword,
   validateRegistration,
+  validateWorkout,
   validateWorkoutSet
 } from '../src/js/validation.js';
 
@@ -111,5 +114,49 @@ describe('validateGoal', () => {
 
   it('приема срок днес', () => {
     expect(validateGoal({ title: 'Цел', targetValue: '5', unit: 'km', dueDate: '2026-11-12' }, today).valid).toBe(true);
+  });
+});
+
+describe('validateWorkout', () => {
+  const base = { title: 'Цяло тяло', workoutDate: '2026-11-12', notes: '', sets: [{ exerciseId: 'e1', repetitions: '8', weightKg: '40' }] };
+
+  it('приема тренировка с една серия', () => {
+    expect(validateWorkout(base).valid).toBe(true);
+  });
+
+  it('изисква поне една серия и валидна дата', () => {
+    const { valid, errors } = validateWorkout({ ...base, workoutDate: '2026-02-30', sets: [] });
+    expect(valid).toBe(false);
+    expect(errors.sets).toBe('Добавете поне една серия.');
+    expect(errors.workoutDate).toBe('Невалидна дата.');
+  });
+
+  it('показва грешките за всяка серия поотделно', () => {
+    const { valid, setErrors } = validateWorkout({ ...base, sets: [base.sets[0], { exerciseId: '', repetitions: '' }] });
+    expect(valid).toBe(false);
+    expect(setErrors[0]).toEqual({});
+    expect(Object.keys(setErrors[1]).sort()).toEqual(['exerciseId', 'repetitions']);
+  });
+
+  it('отхвърля повече от 50 серии', () => {
+    expect(validateWorkout({ ...base, sets: Array(51).fill(base.sets[0]) }).errors.sets).toMatch('50');
+  });
+});
+
+describe('validatePlan', () => {
+  it('приема план без упражнения', () => {
+    expect(validatePlan({ name: 'Крака', description: '', items: [] }).valid).toBe(true);
+  });
+
+  it('проверява името и целевите серии', () => {
+    const { valid, errors, itemErrors } = validatePlan({ name: 'К', items: [{ exerciseId: 'e1', targetSets: '0', targetReps: '8' }] });
+    expect(valid).toBe(false);
+    expect(errors.name).toBeDefined();
+    expect(itemErrors[0].targetSets).toMatch('поне 1');
+  });
+
+  it('изисква повторения или минути за упражнение в план', () => {
+    expect(validatePlanItem({ exerciseId: 'e1', targetSets: '3' }).errors.targetReps).toBe('Въведете повторения или продължителност.');
+    expect(validatePlanItem({ exerciseId: 'e1', targetSets: '1', targetDurationMinutes: '20' }).valid).toBe(true);
   });
 });

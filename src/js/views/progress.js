@@ -1,7 +1,7 @@
 import { fetchWorkouts } from '../api.js';
-import { formatDate, formatShortDate } from '../format.js';
+import { weeklyLoad } from '../algorithm.js';
+import { formatDate, formatNumber, formatShortDate } from '../format.js';
 import { t } from '../i18n.js';
-import { weeklyWorkoutCounts } from '../stats.js';
 import { setView } from '../ui.js';
 
 export function renderWeekBars(weeks) {
@@ -24,7 +24,7 @@ export async function renderProgress({ isCurrent }) {
   if (!isCurrent()) {
     return;
   }
-  const weeks = weeklyWorkoutCounts(workouts, 8);
+  const weeks = weeklyLoad(workouts, 8);
   const rows = [...weeks].reverse();
 
   setView(`
@@ -46,7 +46,7 @@ export async function renderProgress({ isCurrent }) {
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th scope="col">${t('progress.weekOf')}</th><th scope="col" class="numeric">${t('nav.workouts')}</th><th scope="col" class="numeric">${t('progress.sets')}</th></tr>
+                <tr><th scope="col">${t('progress.weekOf')}</th><th scope="col" class="numeric">${t('nav.workouts')}</th><th scope="col" class="numeric">${t('progress.sets')}</th><th scope="col" class="numeric">${t('progress.volume')}</th></tr>
               </thead>
               <tbody>
                 ${rows.map((week) => `
@@ -54,6 +54,7 @@ export async function renderProgress({ isCurrent }) {
                     <td>${formatDate(week.weekStart)}</td>
                     <td class="numeric">${week.workouts}</td>
                     <td class="numeric">${week.sets}</td>
+                    <td class="numeric">${formatNumber(week.volume)}</td>
                   </tr>`).join('')}
               </tbody>
             </table>

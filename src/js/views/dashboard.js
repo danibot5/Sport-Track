@@ -73,7 +73,7 @@ export async function renderDashboard({ isCurrent }) {
           <h1>${t('dash.hello', { name: escapeHtml(getDisplayName()) })}</h1>
           <p>${t('dash.summary')}</p>
         </div>
-        <a class="btn" href="#/workouts">${t('nav.workouts')}</a>
+        <a class="btn" href="#/workouts/new">${t('wo.new')}</a>
       </div>
 
       <div class="grid grid-stats">
